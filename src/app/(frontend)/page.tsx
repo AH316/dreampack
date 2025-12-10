@@ -3,8 +3,27 @@ import Image from 'next/image'
 import { db } from '@/db'
 import { categories, products } from '@/db/schema'
 
-async function getCategories() {
-  return await db.select().from(categories).orderBy(categories.name)
+// Category image mapping recovered from original upload-images.ts
+const categoryImageMapping: Record<string, string> = {
+  'paper-bags-custom': '/media/page-000.png',
+  'paper-bags-stock': '/media/page-018.png',
+  'reusable-bags': '/media/page-062.png',
+  'stretch-film': '/media/page-088.png',
+  'garbage-bags': '/media/page-116.png',
+  'plastic-bags-mailers': '/media/page-129.png',
+  'food-packaging': '/media/page-178.png',
+  'shrink-film': '/media/page-165.png',
+  'pizza-boxes': '/media/page-195.png',
+  'custom-labels': '/media/labels-category.jpg',
+}
+
+async function getCategoriesWithImages() {
+  const allCategories = await db.select().from(categories).orderBy(categories.name)
+
+  return allCategories.map((category) => ({
+    ...category,
+    image: categoryImageMapping[category.slug] || null,
+  }))
 }
 
 async function getFeaturedProducts() {
@@ -19,7 +38,7 @@ async function getFeaturedProducts() {
 
 export default async function HomePage() {
   const [allCategories, featuredProducts] = await Promise.all([
-    getCategories(),
+    getCategoriesWithImages(),
     getFeaturedProducts(),
   ])
 
@@ -63,14 +82,28 @@ export default async function HomePage() {
               <Link
                 key={category.id}
                 href={`/category/${category.slug}`}
-                className="bg-neutral-50 hover:bg-primary hover:text-white rounded-xl p-6 text-center transition-colors group"
+                className="bg-white rounded-xl overflow-hidden border border-neutral-200 hover:shadow-lg transition-shadow group"
               >
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/20 group-hover:bg-white/20 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-primary group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                  </svg>
+                <div className="aspect-square bg-neutral-100 relative overflow-hidden">
+                  {category.image ? (
+                    <Image
+                      src={category.image}
+                      alt={category.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <svg className="w-12 h-12 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                    </div>
+                  )}
                 </div>
-                <h3 className="font-semibold">{category.name}</h3>
+                <div className="p-4 text-center">
+                  <h3 className="font-semibold text-neutral-900 group-hover:text-primary transition-colors">{category.name}</h3>
+                </div>
               </Link>
             ))}
           </div>
