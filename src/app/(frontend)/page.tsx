@@ -1,15 +1,28 @@
 import Link from 'next/link'
+import Image from 'next/image'
+import { db } from '@/db'
+import { categories, products } from '@/db/schema'
 
-const placeholderCategories = [
-  'Paper Bags',
-  'Reusable Bags',
-  'Plastic Bags',
-  'Food Packaging',
-  'Gift Boxes',
-  'Stretch Film'
-]
+async function getCategories() {
+  return await db.select().from(categories).orderBy(categories.name)
+}
 
-export default function HomePage() {
+async function getFeaturedProducts() {
+  return await db.query.products.findMany({
+    limit: 8,
+    with: {
+      category: true,
+    },
+    orderBy: (products, { asc }) => [asc(products.name)],
+  })
+}
+
+export default async function HomePage() {
+  const [allCategories, featuredProducts] = await Promise.all([
+    getCategories(),
+    getFeaturedProducts(),
+  ])
+
   return (
     <div>
       {/* Hero Section */}
@@ -45,24 +58,73 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold text-neutral-900 mb-8 text-center">
             Product Categories
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {placeholderCategories.map((name) => (
-              <div
-                key={name}
-                className="bg-neutral-50 rounded-xl p-6 text-center"
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+            {allCategories.map((category) => (
+              <Link
+                key={category.id}
+                href={`/category/${category.slug}`}
+                className="bg-neutral-50 hover:bg-primary hover:text-white rounded-xl p-6 text-center transition-colors group"
               >
-                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">
-                  <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/20 group-hover:bg-white/20 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-primary group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
                 </div>
-                <h3 className="font-semibold text-neutral-800">{name}</h3>
-              </div>
+                <h3 className="font-semibold">{category.name}</h3>
+              </Link>
             ))}
           </div>
-          <p className="text-center text-neutral-500 mt-8">
-            Categories will be populated from the admin panel.
-          </p>
+        </div>
+      </section>
+
+      {/* Featured Products */}
+      <section className="py-16 bg-neutral-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-neutral-900">
+              Featured Products
+            </h2>
+            <Link href="/products" className="text-primary hover:underline font-medium">
+              View All Products
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {featuredProducts.map((product) => (
+              <Link
+                key={product.id}
+                href={`/product/${product.slug}`}
+                className="bg-white rounded-xl overflow-hidden border border-neutral-200 hover:shadow-lg transition-shadow group"
+              >
+                <div className="aspect-square bg-neutral-100 relative overflow-hidden">
+                  {product.images && product.images.length > 0 ? (
+                    <Image
+                      src={product.images[0]}
+                      alt={product.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <svg className="w-16 h-16 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                <div className="p-4">
+                  <h3 className="font-medium text-neutral-900 line-clamp-2 mb-1">
+                    {product.name}
+                  </h3>
+                  {product.category && (
+                    <p className="text-sm text-neutral-500">
+                      {product.category.name}
+                    </p>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
