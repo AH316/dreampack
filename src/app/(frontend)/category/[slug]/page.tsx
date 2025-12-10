@@ -1,9 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
-import { notFound } from 'next/navigation'
-import { getPayloadClient } from '@/lib/payload'
-import { getCardUrl } from '@/lib/media'
-import type { Media } from '@/payload-types'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -11,51 +6,16 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params
-  const payload = await getPayloadClient()
-
-  const { docs } = await payload.find({
-    collection: 'categories',
-    where: { slug: { equals: slug } },
-    limit: 1,
-  })
-
-  const category = docs[0]
-  if (!category) return { title: 'Category Not Found' }
-
+  const categoryName = slug.replace(/-/g, ' ')
   return {
-    title: `${category.name} - DreamPack`,
-    description: category.description || `Browse our ${category.name} products`,
+    title: `${categoryName} - DreamPack`,
+    description: `Browse our ${categoryName} products`,
   }
 }
 
 export default async function CategoryPage({ params }: PageProps) {
   const { slug } = await params
-  const payload = await getPayloadClient()
-
-  // Fetch category
-  const { docs: categories } = await payload.find({
-    collection: 'categories',
-    where: { slug: { equals: slug } },
-    limit: 1,
-  })
-
-  const category = categories[0]
-  if (!category) notFound()
-
-  // Fetch subcategories for this category
-  const { docs: subcategories } = await payload.find({
-    collection: 'subcategories',
-    where: { parentCategory: { equals: category.id } },
-    sort: 'order',
-  })
-
-  // Fetch products in this category
-  const { docs: products } = await payload.find({
-    collection: 'products',
-    where: { category: { equals: category.id } },
-    sort: 'name',
-    limit: 100,
-  })
+  const categoryName = slug.replace(/-/g, ' ')
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -66,104 +26,36 @@ export default async function CategoryPage({ params }: PageProps) {
           <li>/</li>
           <li><Link href="/products" className="hover:text-primary">Products</Link></li>
           <li>/</li>
-          <li className="text-neutral-900 font-medium">{category.name}</li>
+          <li className="text-neutral-900 font-medium capitalize">{categoryName}</li>
         </ol>
       </nav>
 
       {/* Category Header */}
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-2">
-          {category.name}
+        <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-2 capitalize">
+          {categoryName}
         </h1>
-        {category.description && (
-          <p className="text-lg text-neutral-600">{category.description}</p>
-        )}
+        <p className="text-lg text-neutral-600">
+          Products in this category will be displayed once added through the admin panel.
+        </p>
       </div>
 
-      {/* Subcategories */}
-      {subcategories.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold text-neutral-800 mb-4">Browse by Type</h2>
-          <div className="flex flex-wrap gap-2">
-            {subcategories.map((sub) => (
-              <Link
-                key={sub.id}
-                href={`/category/${slug}?sub=${sub.slug}`}
-                className="px-4 py-2 bg-neutral-100 hover:bg-primary hover:text-white rounded-full text-sm transition-colors"
-              >
-                {sub.name}
-              </Link>
-            ))}
+      {/* Products Grid Placeholder */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="bg-white rounded-xl overflow-hidden border border-neutral-200">
+            <div className="aspect-square bg-neutral-100 flex items-center justify-center">
+              <svg className="w-16 h-16 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+            <div className="p-4">
+              <div className="h-4 bg-neutral-200 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-neutral-100 rounded w-1/2"></div>
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* Products Grid */}
-      {products.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {products.map((product) => {
-            const imgUrl = product.images && product.images[0] && typeof product.images[0].image === 'object'
-              ? getCardUrl(product.images[0].image as Media)
-              : ''
-            return (
-              <Link
-                key={product.id}
-                href={`/product/${product.slug}`}
-                className="group bg-white rounded-xl overflow-hidden border border-neutral-200 hover:shadow-lg transition-all hover:-translate-y-1"
-              >
-                {/* Product Image */}
-                <div className="aspect-square bg-neutral-100 relative overflow-hidden">
-                  {imgUrl ? (
-                    <Image
-                      src={imgUrl}
-                      alt={product.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <svg className="w-16 h-16 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-
-                {/* Product Info */}
-                <div className="p-4">
-                  <h3 className="font-semibold text-neutral-900 group-hover:text-primary transition-colors line-clamp-2">
-                    {product.name}
-                  </h3>
-                  {product.sku && (
-                    <p className="text-xs text-neutral-500 mt-1">SKU: {product.sku}</p>
-                  )}
-                  {product.pricing?.showPrice && product.pricing?.price && (
-                    <p className="text-primary font-bold mt-2">
-                      ${product.pricing.price.toFixed(2)}
-                      {product.pricing.unit && (
-                        <span className="text-sm text-neutral-500 font-normal"> / {product.pricing.unit}</span>
-                      )}
-                    </p>
-                  )}
-                  {product.pricing?.minimumOrder && (
-                    <p className="text-xs text-neutral-500">
-                      Min. order: {product.pricing.minimumOrder}
-                    </p>
-                  )}
-                </div>
-              </Link>
-            )
-          })}
-        </div>
-      ) : (
-        <div className="text-center py-16 bg-neutral-50 rounded-xl">
-          <svg className="w-16 h-16 text-neutral-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-          </svg>
-          <h3 className="text-lg font-medium text-neutral-600 mb-2">No products yet</h3>
-          <p className="text-neutral-500">Products will appear here once added to this category.</p>
-        </div>
-      )}
+        ))}
+      </div>
 
       {/* Contact CTA */}
       <div className="mt-12 bg-primary/10 rounded-xl p-8 text-center">

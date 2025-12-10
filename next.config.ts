@@ -1,4 +1,3 @@
-import { withPayload } from '@payloadcms/next/withPayload'
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
@@ -8,11 +7,12 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '**.vercel-storage.com',
       },
+      {
+        protocol: 'https',
+        hostname: '**.blob.vercel-storage.com',
+      },
     ],
-  },
-  experimental: {
-    reactCompiler: false,
   },
 }
 
-export default withPayload(nextConfig)
+export default nextConfig
