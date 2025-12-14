@@ -4,6 +4,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
 import MobileNav from './MobileNav'
+import { CartButton } from '@/components/cart'
+import { CategoriesDropdown } from './categories-dropdown'
 
 export default function Header() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
@@ -27,12 +29,7 @@ export default function Header() {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-6">
-              <Link
-                href="/products"
-                className="text-neutral-700 hover:text-primary transition-colors"
-              >
-                Products
-              </Link>
+              <CategoriesDropdown />
               <Link
                 href="/about"
                 className="text-neutral-700 hover:text-primary transition-colors"
@@ -47,31 +44,35 @@ export default function Header() {
               </Link>
             </nav>
 
-            {/* Desktop Search & Contact */}
-            <div className="hidden md:flex items-center gap-4">
-              <Link href="/search" className="p-2 text-neutral-600 hover:text-primary">
+            {/* Desktop Search, Cart & Contact */}
+            <div className="hidden md:flex items-center gap-2">
+              <Link href="/search" className="p-2 text-neutral-600 hover:text-primary transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </Link>
+              <CartButton />
               <a
-                href="tel:+19737277112"
-                className="bg-accent hover:bg-accent-dark text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                href="tel:+19738361100"
+                className="bg-accent hover:bg-accent-dark text-white px-4 py-2 rounded-lg font-medium transition-colors ml-2"
               >
                 Call Us
               </a>
             </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileNavOpen(true)}
-              className="md:hidden p-2 text-neutral-700"
-              aria-label="Open menu"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
+            {/* Mobile Cart & Menu Button */}
+            <div className="flex md:hidden items-center gap-1">
+              <CartButton />
+              <button
+                onClick={() => setMobileNavOpen(true)}
+                className="p-2 text-neutral-700"
+                aria-label="Open menu"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </header>

@@ -2,27 +2,15 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { db } from '@/db'
 import { categories, products } from '@/db/schema'
-
-// Category image mapping recovered from original upload-images.ts
-const categoryImageMapping: Record<string, string> = {
-  'paper-bags-custom': '/media/page-000.png',
-  'paper-bags-stock': '/media/page-018.png',
-  'reusable-bags': '/media/page-062.png',
-  'stretch-film': '/media/page-088.png',
-  'garbage-bags': '/media/page-116.png',
-  'plastic-bags-mailers': '/media/page-129.png',
-  'food-packaging': '/media/page-178.png',
-  'shrink-film': '/media/page-165.png',
-  'pizza-boxes': '/media/page-195.png',
-  'custom-labels': '/media/labels-category.jpg',
-}
+import { ProductGrid } from '@/components/product'
 
 async function getCategoriesWithImages() {
   const allCategories = await db.select().from(categories).orderBy(categories.name)
 
   return allCategories.map((category) => ({
     ...category,
-    image: categoryImageMapping[category.slug] || null,
+    // Use the first image from the images array, or null if no images
+    image: category.images && category.images.length > 0 ? category.images[0] : null,
   }))
 }
 
@@ -52,7 +40,7 @@ export default async function HomePage() {
           </h1>
           <p className="text-xl text-neutral-600 mb-8 max-w-2xl mx-auto">
             Quality paper bags, food packaging, and custom printing for small businesses.
-            Serving New York since 2010.
+            Serving New York and New Jersey since 2010. Shipping across North America.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -62,10 +50,10 @@ export default async function HomePage() {
               Browse Products
             </Link>
             <a
-              href="tel:+19737277112"
+              href="tel:+19738361100"
               className="bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-lg font-semibold transition-colors text-lg"
             >
-              Call (973) 727-7112
+              Call (973) 836-1100
             </a>
           </div>
         </div>
@@ -121,43 +109,7 @@ export default async function HomePage() {
               View All Products
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {featuredProducts.map((product) => (
-              <Link
-                key={product.id}
-                href={`/product/${product.slug}`}
-                className="bg-white rounded-xl overflow-hidden border border-neutral-200 hover:shadow-lg transition-shadow group"
-              >
-                <div className="aspect-square bg-neutral-100 relative overflow-hidden">
-                  {product.images && product.images.length > 0 ? (
-                    <Image
-                      src={product.images[0]}
-                      alt={product.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <svg className="w-16 h-16 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-                <div className="p-4">
-                  <h3 className="font-medium text-neutral-900 line-clamp-2 mb-1">
-                    {product.name}
-                  </h3>
-                  {product.category && (
-                    <p className="text-sm text-neutral-500">
-                      {product.category.name}
-                    </p>
-                  )}
-                </div>
-              </Link>
-            ))}
-          </div>
+          <ProductGrid products={featuredProducts} />
         </div>
       </section>
 
@@ -206,10 +158,10 @@ export default async function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="tel:+19737277112"
+              href="tel:+19738361100"
               className="bg-white text-primary hover:bg-neutral-100 px-8 py-4 rounded-lg font-semibold transition-colors text-lg"
             >
-              Call (973) 727-7112
+              Call (973) 836-1100
             </a>
             <a
               href="mailto:aipek@dreampackss.com"

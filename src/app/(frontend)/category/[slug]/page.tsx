@@ -1,9 +1,9 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { db } from '@/db'
 import { categories, products } from '@/db/schema'
 import { eq } from 'drizzle-orm'
+import { ProductGrid } from '@/components/product'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -79,43 +79,16 @@ export default async function CategoryPage({ params }: PageProps) {
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-        {categoryProducts.map((product) => (
-          <Link
-            key={product.id}
-            href={`/product/${product.slug}`}
-            className="bg-white rounded-xl overflow-hidden border border-neutral-200 hover:shadow-lg transition-shadow group"
-          >
-            <div className="aspect-square bg-neutral-100 relative overflow-hidden">
-              {product.images && product.images.length > 0 ? (
-                <Image
-                  src={product.images[0]}
-                  alt={product.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <svg className="w-16 h-16 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                  </svg>
-                </div>
-              )}
-            </div>
-            <div className="p-4">
-              <h3 className="font-medium text-neutral-900 line-clamp-2">
-                {product.name}
-              </h3>
-              {product.sizes && (
-                <p className="text-sm text-neutral-500 mt-1">
-                  {product.sizes.split(',').length} size{product.sizes.split(',').length !== 1 ? 's' : ''} available
-                </p>
-              )}
-            </div>
-          </Link>
-        ))}
-      </div>
+      <ProductGrid
+        products={categoryProducts.map((p) => ({
+          ...p,
+          category: {
+            id: category.id,
+            name: category.name,
+            slug: category.slug,
+          },
+        }))}
+      />
 
       {categoryProducts.length === 0 && (
         <div className="text-center py-12">
@@ -136,10 +109,10 @@ export default async function CategoryPage({ params }: PageProps) {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
-            href="tel:+19737277112"
+            href="tel:+19738361100"
             className="bg-accent hover:bg-accent-dark text-white px-6 py-3 rounded-lg font-semibold transition-colors"
           >
-            Call (973) 727-7112
+            Call (973) 836-1100
           </a>
           <a
             href="mailto:aipek@dreampackss.com"

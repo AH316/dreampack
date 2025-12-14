@@ -1,9 +1,35 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+type ContactInfo = {
+  phone: string
+  cell: string
+  email: string
+  whatsapp: string
+  address: string
+}
 
 export default function FloatingContact() {
   const [isOpen, setIsOpen] = useState(false)
+  const [contactInfo, setContactInfo] = useState<ContactInfo>({
+    phone: '(973) 836-1100',
+    cell: '(973) 727-7112',
+    email: 'aipek@dreampackss.com',
+    whatsapp: '19737277112',
+    address: 'New Jersey',
+  })
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.contactInfo) {
+          setContactInfo(data.contactInfo)
+        }
+      })
+      .catch(console.error)
+  }, [])
 
   return (
     <div className="fixed bottom-4 right-4 z-50 md:hidden">
@@ -11,7 +37,7 @@ export default function FloatingContact() {
       {isOpen && (
         <div className="absolute bottom-16 right-0 bg-white rounded-lg shadow-xl p-2 min-w-[200px] border">
           <a
-            href="tel:+19737277112"
+            href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}
             className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-100 rounded-lg transition-colors"
           >
             <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center">
@@ -21,12 +47,12 @@ export default function FloatingContact() {
             </div>
             <div>
               <span className="font-medium text-neutral-900 block">Call</span>
-              <span className="text-sm text-neutral-500">(973) 727-7112</span>
+              <span className="text-sm text-neutral-500">{contactInfo.phone}</span>
             </div>
           </a>
 
           <a
-            href="https://wa.me/19737277112"
+            href={`https://wa.me/${contactInfo.whatsapp}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-100 rounded-lg transition-colors"
@@ -43,7 +69,7 @@ export default function FloatingContact() {
           </a>
 
           <a
-            href="mailto:aipek@dreampackss.com"
+            href={`mailto:${contactInfo.email}`}
             className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-100 rounded-lg transition-colors"
           >
             <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
@@ -53,7 +79,7 @@ export default function FloatingContact() {
             </div>
             <div>
               <span className="font-medium text-neutral-900 block">Email</span>
-              <span className="text-sm text-neutral-500">aipek@dreampackss.com</span>
+              <span className="text-sm text-neutral-500">{contactInfo.email}</span>
             </div>
           </a>
         </div>

@@ -1,61 +1,99 @@
+import Link from 'next/link'
 import { db } from '@/db'
-import { categories, products, media, pages } from '@/db/schema'
-import { count } from 'drizzle-orm'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Package, FolderTree, Image, FileText } from 'lucide-react'
 
-export default async function AdminDashboard() {
-  const [categoriesCount, productsCount, mediaCount, pagesCount] = await Promise.all([
-    db.select({ count: count() }).from(categories),
-    db.select({ count: count() }).from(products),
-    db.select({ count: count() }).from(media),
-    db.select({ count: count() }).from(pages),
+export const dynamic = 'force-dynamic'
+import { categories, products } from '@/db/schema'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Package, FolderTree, Plus } from 'lucide-react'
+
+async function getStats() {
+  const [categoriesResult, productsResult] = await Promise.all([
+    db.select().from(categories),
+    db.select().from(products),
   ])
 
-  const stats = [
-    {
-      title: 'Categories',
-      value: categoriesCount[0].count,
-      icon: FolderTree,
-      href: '/admin/categories',
-    },
-    {
-      title: 'Products',
-      value: productsCount[0].count,
-      icon: Package,
-      href: '/admin/products',
-    },
-    {
-      title: 'Media',
-      value: mediaCount[0].count,
-      icon: Image,
-      href: '/admin/media',
-    },
-    {
-      title: 'Pages',
-      value: pagesCount[0].count,
-      icon: FileText,
-      href: '/admin/pages',
-    },
-  ]
+  return {
+    categoriesCount: categoriesResult.length,
+    productsCount: productsResult.length,
+  }
+}
+
+export default async function AdminDashboard() {
+  const stats = await getStats()
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <p className="text-muted-foreground">Welcome to DreamPack Admin</p>
+      </div>
+
+      {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-            </CardContent>
-          </Card>
-        ))}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Categories</CardTitle>
+            <FolderTree className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.categoriesCount}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+            <Package className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.productsCount}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
+        <div className="flex flex-wrap gap-4">
+          <Button asChild>
+            <Link href="/admin/products/new">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Product
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/admin/categories/new">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Category
+            </Link>
+          </Button>
+        </div>
+      </div>
+
+      {/* Management Links */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Categories</CardTitle>
+            <CardDescription>Manage your product categories</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/admin/categories">View All Categories</Link>
+            </Button>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Products</CardTitle>
+            <CardDescription>Manage your product catalogue</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/admin/products">View All Products</Link>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

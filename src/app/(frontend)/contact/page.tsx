@@ -1,23 +1,27 @@
+import { getSettings } from '@/lib/settings'
+
 export const metadata = {
   title: 'Contact Us - DreamPack',
   description: 'Get in touch with DreamPack for packaging solutions, custom orders, and wholesale inquiries.',
 }
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getSettings()
+  const { contactInfo, businessHours, contactPage, aboutPage } = settings
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4 text-center">
-        Contact Us
+        {contactPage.title}
       </h1>
       <p className="text-lg text-neutral-600 text-center mb-12">
-        We're here to help with all your packaging needs
+        {contactPage.subtitle}
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Contact Info */}
         <div className="space-y-6">
           <div className="bg-neutral-50 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-neutral-900 mb-4">Get In Touch</h2>
+            <h2 className="text-xl font-bold text-neutral-900 mb-4">{contactPage.getInTouchTitle}</h2>
 
             <div className="space-y-4">
               {/* Phone */}
@@ -29,11 +33,11 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-neutral-900">Phone</h3>
-                  <a href="tel:+19737277112" className="text-primary hover:underline block">
-                    (973) 727-7112
+                  <a href={`tel:${contactInfo.phone.replace(/\D/g, '')}`} className="text-primary hover:underline block">
+                    {contactInfo.phone}
                   </a>
-                  <a href="tel:+19737277112" className="text-neutral-600 text-sm">
-                    Cell: (973) 727-7112
+                  <a href={`tel:${contactInfo.cell.replace(/\D/g, '')}`} className="text-neutral-600 text-sm">
+                    Cell: {contactInfo.cell}
                   </a>
                 </div>
               </div>
@@ -48,7 +52,7 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-semibold text-neutral-900">WhatsApp</h3>
                   <a
-                    href="https://wa.me/19737277112"
+                    href={`https://wa.me/${contactInfo.whatsapp}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-green-600 hover:underline"
@@ -67,8 +71,8 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-neutral-900">Email</h3>
-                  <a href="mailto:aipek@dreampackss.com" className="text-primary hover:underline">
-                    aipek@dreampackss.com
+                  <a href={`mailto:${contactInfo.email}`} className="text-primary hover:underline">
+                    {contactInfo.email}
                   </a>
                 </div>
               </div>
@@ -83,7 +87,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-neutral-900">Location</h3>
-                  <p className="text-neutral-600">New York, NY</p>
+                  <p className="text-neutral-600">{contactInfo.address}</p>
                 </div>
               </div>
             </div>
@@ -94,16 +98,16 @@ export default function ContactPage() {
             <h2 className="text-xl font-bold text-neutral-900 mb-4">Business Hours</h2>
             <dl className="space-y-2 text-neutral-600">
               <div className="flex justify-between">
-                <dt>Monday - Friday</dt>
-                <dd className="font-medium text-neutral-900">9:00 AM - 5:00 PM</dd>
+                <dt>{businessHours.weekdaysLabel}</dt>
+                <dd className="font-medium text-neutral-900">{businessHours.weekdays}</dd>
               </div>
               <div className="flex justify-between">
-                <dt>Saturday</dt>
-                <dd className="font-medium text-neutral-900">By Appointment</dd>
+                <dt>{businessHours.saturdayLabel}</dt>
+                <dd className="font-medium text-neutral-900">{businessHours.saturday}</dd>
               </div>
               <div className="flex justify-between">
-                <dt>Sunday</dt>
-                <dd className="font-medium text-neutral-500">Closed</dd>
+                <dt>{businessHours.sundayLabel}</dt>
+                <dd className="font-medium text-neutral-500">{businessHours.sunday}</dd>
               </div>
             </dl>
           </div>
@@ -112,25 +116,25 @@ export default function ContactPage() {
         {/* Quick Actions */}
         <div className="space-y-6">
           <div className="bg-primary rounded-xl p-6 text-white">
-            <h2 className="text-xl font-bold mb-4">Quick Contact</h2>
+            <h2 className="text-xl font-bold mb-4">{contactPage.quickContactTitle}</h2>
             <p className="text-white/90 mb-6">
-              The fastest way to reach us is by phone. We're ready to help with your packaging needs.
+              {contactPage.quickContactText}
             </p>
             <a
-              href="tel:+19737277112"
+              href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}
               className="block w-full bg-white text-primary hover:bg-neutral-100 px-6 py-4 rounded-lg font-semibold transition-colors text-center text-lg"
             >
-              Call (973) 727-7112
+              Call {contactInfo.phone}
             </a>
           </div>
 
           <div className="bg-accent rounded-xl p-6 text-white">
-            <h2 className="text-xl font-bold mb-4">Request a Quote</h2>
+            <h2 className="text-xl font-bold mb-4">{contactPage.quoteTitle}</h2>
             <p className="text-white/90 mb-6">
-              Send us an email with your requirements and we'll get back to you with pricing.
+              {contactPage.quoteText}
             </p>
             <a
-              href="mailto:aipek@dreampackss.com?subject=Quote Request"
+              href={`mailto:${contactInfo.email}?subject=Quote Request`}
               className="block w-full bg-white text-accent hover:bg-neutral-100 px-6 py-4 rounded-lg font-semibold transition-colors text-center"
             >
               Email for Quote
@@ -138,38 +142,16 @@ export default function ContactPage() {
           </div>
 
           <div className="bg-neutral-900 rounded-xl p-6 text-white">
-            <h2 className="text-xl font-bold mb-4">What We Offer</h2>
+            <h2 className="text-xl font-bold mb-4">{contactPage.offeringsTitle}</h2>
             <ul className="space-y-3 text-neutral-300">
-              <li className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-primary-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Paper bags & shopping bags
-              </li>
-              <li className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-primary-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Food packaging & containers
-              </li>
-              <li className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-primary-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Gift boxes & tissue paper
-              </li>
-              <li className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-primary-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Custom printing services
-              </li>
-              <li className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-primary-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Wholesale pricing
-              </li>
+              {aboutPage.offerings.map((item, index) => (
+                <li key={index} className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-primary-light flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  {item}
+                </li>
+              ))}
             </ul>
           </div>
         </div>

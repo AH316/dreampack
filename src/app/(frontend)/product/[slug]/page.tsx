@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { db } from '@/db'
 import { products } from '@/db/schema'
 import { eq } from 'drizzle-orm'
+import { ProductActions } from '@/components/product/product-actions'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -113,23 +114,6 @@ export default async function ProductPage({ params }: PageProps) {
             </p>
           )}
 
-          {/* Sizes */}
-          {product.sizes && (
-            <div className="mb-6">
-              <h3 className="font-semibold text-neutral-900 mb-3">Available Sizes</h3>
-              <div className="flex flex-wrap gap-2">
-                {product.sizes.split(',').map((size: string) => (
-                  <span
-                    key={size}
-                    className="px-3 py-1.5 bg-neutral-100 text-neutral-700 rounded-lg text-sm font-medium"
-                  >
-                    {size.trim()}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Specifications */}
           {specs && Object.keys(specs).length > 0 && (
             <div className="mb-6">
@@ -147,27 +131,8 @@ export default async function ProductPage({ params }: PageProps) {
             </div>
           )}
 
-          {/* Contact CTA */}
-          <div className="bg-neutral-900 rounded-xl p-6 text-white">
-            <h2 className="text-xl font-bold mb-2">Ready to Order?</h2>
-            <p className="text-neutral-300 mb-4">
-              Contact us for pricing, bulk orders, and custom printing options.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <a
-                href="tel:+19737277112"
-                className="flex-1 bg-accent hover:bg-accent-dark text-white px-6 py-3 rounded-lg font-semibold transition-colors text-center"
-              >
-                Call (973) 727-7112
-              </a>
-              <a
-                href="mailto:aipek@dreampackss.com"
-                className="flex-1 bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg font-semibold transition-colors text-center"
-              >
-                Email Us
-              </a>
-            </div>
-          </div>
+          {/* Product Actions (Cart, WhatsApp, Contact) */}
+          <ProductActions product={product} />
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { AdminSidebar } from '@/components/admin/sidebar'
 import { AdminHeader } from '@/components/admin/header'
+import { Toaster } from '@/components/ui/sonner'
 
 export default async function DashboardLayout({
   children,
@@ -19,8 +20,9 @@ export default async function DashboardLayout({
       <AdminSidebar />
       <div className="lg:pl-64">
         <AdminHeader user={session.user} />
-        <main className="p-6">{children}</main>
+        <main className="p-4 md:p-6">{children}</main>
       </div>
+      <Toaster richColors position="top-right" />
     </div>
   )
 }
