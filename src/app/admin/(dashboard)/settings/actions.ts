@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { siteSettings, type ContactInfo, type BusinessHours, type ContactPageContent } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -15,7 +15,6 @@ export async function updateContactInfo(id: string, data: ContactInfo) {
       })
       .where(eq(siteSettings.id, id))
 
-    revalidateTag('settings')
     revalidatePath('/admin/settings')
     revalidatePath('/', 'layout')
     return { success: true }
@@ -35,7 +34,6 @@ export async function updateBusinessHours(id: string, data: BusinessHours) {
       })
       .where(eq(siteSettings.id, id))
 
-    revalidateTag('settings')
     revalidatePath('/admin/settings')
     revalidatePath('/contact')
     return { success: true }
@@ -60,7 +58,6 @@ export async function updateSocialLinks(id: string, data: {
       })
       .where(eq(siteSettings.id, id))
 
-    revalidateTag('settings')
     revalidatePath('/admin/settings')
     revalidatePath('/', 'layout')
     return { success: true }
@@ -80,7 +77,6 @@ export async function updateContactPage(id: string, data: ContactPageContent) {
       })
       .where(eq(siteSettings.id, id))
 
-    revalidateTag('settings')
     revalidatePath('/admin/settings')
     revalidatePath('/contact')
     return { success: true }

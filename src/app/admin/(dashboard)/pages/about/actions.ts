@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { siteSettings, type AboutPageContent } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -15,7 +15,6 @@ export async function updateAboutPage(id: string, data: AboutPageContent) {
       })
       .where(eq(siteSettings.id, id))
 
-    revalidateTag('settings')
     revalidatePath('/admin/pages/about')
     revalidatePath('/about')
     return { success: true }
