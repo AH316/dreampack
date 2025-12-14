@@ -25,6 +25,7 @@ export async function createCategory(formData: FormData) {
 
   const slug = generateSlug(name)
 
+  let success = false
   try {
     await db.insert(categories).values({
       name,
@@ -34,10 +35,14 @@ export async function createCategory(formData: FormData) {
     })
 
     revalidatePath('/admin/categories')
-    redirect('/admin/categories')
+    success = true
   } catch (error) {
     console.error('Error creating category:', error)
     return { error: 'Failed to create category' }
+  }
+
+  if (success) {
+    redirect('/admin/categories')
   }
 }
 
@@ -53,6 +58,7 @@ export async function updateCategory(id: string, formData: FormData) {
 
   const slug = generateSlug(name)
 
+  let success = false
   try {
     await db
       .update(categories)
@@ -66,10 +72,14 @@ export async function updateCategory(id: string, formData: FormData) {
       .where(eq(categories.id, id))
 
     revalidatePath('/admin/categories')
-    redirect('/admin/categories')
+    success = true
   } catch (error) {
     console.error('Error updating category:', error)
     return { error: 'Failed to update category' }
+  }
+
+  if (success) {
+    redirect('/admin/categories')
   }
 }
 

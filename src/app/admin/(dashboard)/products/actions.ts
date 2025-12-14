@@ -30,6 +30,7 @@ export async function createProduct(formData: FormData) {
   const slug = generateSlug(name)
   const images = imagesJson ? JSON.parse(imagesJson) : []
 
+  let success = false
   try {
     await db.insert(products).values({
       name,
@@ -44,10 +45,14 @@ export async function createProduct(formData: FormData) {
     })
 
     revalidatePath('/admin/products')
-    redirect('/admin/products')
+    success = true
   } catch (error) {
     console.error('Error creating product:', error)
     return { error: 'Failed to create product' }
+  }
+
+  if (success) {
+    redirect('/admin/products')
   }
 }
 
@@ -68,6 +73,7 @@ export async function updateProduct(id: string, formData: FormData) {
   const slug = generateSlug(name)
   const images = imagesJson ? JSON.parse(imagesJson) : []
 
+  let success = false
   try {
     await db
       .update(products)
@@ -86,10 +92,14 @@ export async function updateProduct(id: string, formData: FormData) {
       .where(eq(products.id, id))
 
     revalidatePath('/admin/products')
-    redirect('/admin/products')
+    success = true
   } catch (error) {
     console.error('Error updating product:', error)
     return { error: 'Failed to update product' }
+  }
+
+  if (success) {
+    redirect('/admin/products')
   }
 }
 
