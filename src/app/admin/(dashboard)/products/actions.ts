@@ -46,8 +46,12 @@ export async function createProduct(formData: FormData) {
 
     revalidatePath('/admin/products')
     success = true
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error creating product:', error)
+    // Check for unique constraint violation
+    if (error && typeof error === 'object' && 'code' in error && error.code === '23505') {
+      return { error: 'A product with this name already exists' }
+    }
     return { error: 'Failed to create product' }
   }
 
@@ -93,8 +97,12 @@ export async function updateProduct(id: string, formData: FormData) {
 
     revalidatePath('/admin/products')
     success = true
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error updating product:', error)
+    // Check for unique constraint violation
+    if (error && typeof error === 'object' && 'code' in error && error.code === '23505') {
+      return { error: 'A product with this name already exists' }
+    }
     return { error: 'Failed to update product' }
   }
 

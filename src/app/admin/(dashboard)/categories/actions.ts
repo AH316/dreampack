@@ -36,8 +36,12 @@ export async function createCategory(formData: FormData) {
 
     revalidatePath('/admin/categories')
     success = true
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error creating category:', error)
+    // Check for unique constraint violation
+    if (error && typeof error === 'object' && 'code' in error && error.code === '23505') {
+      return { error: 'A category with this name already exists' }
+    }
     return { error: 'Failed to create category' }
   }
 
@@ -73,8 +77,12 @@ export async function updateCategory(id: string, formData: FormData) {
 
     revalidatePath('/admin/categories')
     success = true
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error updating category:', error)
+    // Check for unique constraint violation
+    if (error && typeof error === 'object' && 'code' in error && error.code === '23505') {
+      return { error: 'A category with this name already exists' }
+    }
     return { error: 'Failed to update category' }
   }
 
