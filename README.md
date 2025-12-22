@@ -4,12 +4,14 @@ A modern e-commerce catalogue for DreamPack Smart Solutions, a B2B packaging sup
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router)
-- **CMS**: Payload CMS 3.0
-- **Database**: PostgreSQL (Neon)
+- **Framework**: Next.js 16 (App Router)
+- **Database**: PostgreSQL (Neon) with Drizzle ORM
+- **CMS**: Custom Admin Dashboard
+- **Authentication**: NextAuth.js
 - **Styling**: Tailwind CSS
+- **Image Storage**: Vercel Blob
+- **Analytics**: Vercel Analytics
 - **Language**: TypeScript
-- **Image Optimization**: Sharp
 
 ## Features
 
@@ -17,18 +19,20 @@ A modern e-commerce catalogue for DreamPack Smart Solutions, a B2B packaging sup
 - Responsive product catalogue with category browsing
 - Product search with category filters
 - Individual product pages with image galleries
-- Contact page with inquiry form
-- Mobile-friendly navigation
+- Shopping cart with quote request flow
+- Contact page with business info
+- Mobile-friendly navigation with hover dropdowns
 
 ### Admin Panel
-- Full CRUD for products, categories, and subcategories
-- Media management with automatic image optimization
-- User authentication with role-based access
-- Rich text editor for product descriptions
+- Full CRUD for products and categories
+- CMS for About page and Contact page content
+- Site settings management (contact info, business hours, social links)
+- Media management with Vercel Blob uploads
+- User authentication with secure sessions
 
 ### Performance
 - Server-side rendering for SEO
-- Optimized images with multiple sizes (300x300, 600x600, 1200x600)
+- Optimized images with Next.js Image component
 - Static generation where applicable
 
 ## Getting Started
@@ -36,12 +40,13 @@ A modern e-commerce catalogue for DreamPack Smart Solutions, a B2B packaging sup
 ### Prerequisites
 - Node.js 18+
 - PostgreSQL database (or Neon account)
+- Vercel account (for Blob storage)
 
 ### Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/YOUR_USERNAME/dreampack.git
+git clone https://github.com/AH316/dreampack.git
 cd dreampack
 ```
 
@@ -55,19 +60,25 @@ npm install
 cp .env.example .env
 ```
 
-Edit `.env` with your database credentials:
+Edit `.env` with your credentials:
 ```
-DATABASE_URI=postgresql://user:password@host:5432/dreampack
-PAYLOAD_SECRET=your-secret-key
+DATABASE_URL=postgresql://user:password@host:5432/dreampack
+AUTH_SECRET=your-secret-key
+BLOB_READ_WRITE_TOKEN=your-vercel-blob-token
 ```
 
-4. Run the development server:
+4. Push database schema:
+```bash
+npm run db:push
+```
+
+5. Run the development server:
 ```bash
 npm run dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) for the frontend
-6. Open [http://localhost:3000/admin](http://localhost:3000/admin) for the admin panel
+6. Open [http://localhost:3000](http://localhost:3000) for the frontend
+7. Open [http://localhost:3000/admin](http://localhost:3000/admin) for the admin panel
 
 ## Project Structure
 
@@ -81,19 +92,25 @@ src/
 │   │   ├── product/[slug]/    # Product detail pages
 │   │   ├── search/            # Search functionality
 │   │   ├── about/             # About page
-│   │   └── contact/           # Contact page
-│   ├── (payload)/      # Admin panel routes
+│   │   ├── contact/           # Contact page
+│   │   └── quote/             # Quote request page
+│   ├── admin/          # Admin panel routes
+│   │   ├── (auth)/            # Login page
+│   │   └── (dashboard)/       # Protected admin pages
 │   └── api/            # API routes
-├── collections/        # Payload CMS collections
-│   ├── Products.ts
-│   ├── Categories.ts
-│   ├── Subcategories.ts
-│   ├── Media.ts
-│   └── Users.ts
 ├── components/         # React components
-│   └── layout/        # Header, Footer, Navigation
-├── globals/           # Payload global configs
+│   ├── admin/         # Admin-specific components
+│   ├── cart/          # Shopping cart components
+│   ├── layout/        # Header, Footer, Navigation
+│   ├── product/       # Product cards, grids
+│   └── ui/            # Shared UI components
+├── db/                # Database
+│   ├── index.ts       # Drizzle client
+│   ├── schema.ts      # Database schema
+│   └── migrations/    # SQL migrations
 └── lib/               # Utility functions
+    ├── settings.ts    # Site settings helper
+    └── cart/          # Cart context and types
 ```
 
 ## Scripts
@@ -103,15 +120,17 @@ src/
 | `npm run dev` | Start development server |
 | `npm run build` | Build for production |
 | `npm run start` | Start production server |
-| `npm run generate:types` | Generate Payload types |
+| `npm run db:generate` | Generate Drizzle migrations |
+| `npm run db:push` | Push schema to database |
+| `npm run db:studio` | Open Drizzle Studio |
 
 ## Environment Variables
 
 | Variable | Description |
 |----------|-------------|
-| `DATABASE_URI` | PostgreSQL connection string |
-| `PAYLOAD_SECRET` | Secret key for Payload CMS |
-| `NEXT_PUBLIC_SERVER_URL` | Public URL (optional) |
+| `DATABASE_URL` | PostgreSQL connection string |
+| `AUTH_SECRET` | Secret key for NextAuth.js |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage token |
 
 ## License
 
