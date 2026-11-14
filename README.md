@@ -2,6 +2,30 @@
 
 A modern e-commerce catalogue for DreamPack Smart Solutions, a B2B packaging supplier offering paper bags, gift boxes, food containers, custom labels, and printing services.
 
+Live site: [dreampack.vercel.app](https://dreampack.vercel.app)
+
+Business buyers browse the catalogue, add items to a cart, and send a quote request instead of paying online. The owner manages products, categories, pages and images through a custom admin panel.
+
+## Screenshots
+
+| Homepage | Cart to quote flow |
+|---|---|
+| ![Homepage](docs/screenshots/homepage.png) | ![Cart drawer with Request Quote and WhatsApp options](docs/screenshots/cart-quote-drawer.png) |
+
+| Quote request form |
+|---|
+| ![Quote request page listing cart items and contact fields](docs/screenshots/quote-request.png) |
+
+<!-- TODO: add an admin dashboard screenshot (requires a signed-in session) -->
+
+## How the quote flow works
+
+1. The cart lives in React context on the client (`src/lib/cart`).
+2. "Request Quote" takes the buyer to `/quote`, where the cart items are listed next to a contact form.
+3. Submitting posts to `POST /api/quote`, which validates the payload and inserts a row into the `quotes` table (items stored as JSON, status `pending`).
+4. Quotes are stored in Postgres. There is no admin screen for them yet; the owner reads them from the database (an admin quotes view is the obvious next feature).
+5. As a second channel, every product page and the cart drawer also build a pre-filled WhatsApp link (`src/lib/whatsapp.ts`) for buyers who would rather message than fill a form.
+
 ## Tech Stack
 
 - **Framework**: Next.js 16 (App Router)
